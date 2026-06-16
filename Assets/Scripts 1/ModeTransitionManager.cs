@@ -10,8 +10,11 @@ public class ModeTransitionManager : MonoBehaviour
     [Header("The 3D Player")]
     public GameObject playerFPV; 
     
+    [Header("Level Difficulty Configuration")]
+    [Tooltip("Set to 1 for Drone Guard, 2 for Volepik, and 3 for Roulepik.")]
+    public int npcLevel = 1;
+
     [Header("Scene Travel")]
-    
     public string minigameSceneName = "TurnZero_Mini Game"; 
 
     private bool isPlayerInRange = false;
@@ -49,7 +52,6 @@ public class ModeTransitionManager : MonoBehaviour
         }
     }
 
-    // OPEN THE UI 
     void OpenUIConnector()
     {
         isUIOpen = true;
@@ -65,7 +67,7 @@ public class ModeTransitionManager : MonoBehaviour
         Cursor.visible = true;
     }
 
-    // --- PHASE 2: LAUNCH THE GAME ---
+    // Executes the scene transition and transmits level data to the static manager layer.
     public void LaunchTurnZero()
     {
         if (SceneHistory.Instance != null)
@@ -79,7 +81,10 @@ public class ModeTransitionManager : MonoBehaviour
             Debug.LogWarning("SceneHistory.Instance not found! Make sure SceneHistory script is in the Hub Scene.");
         }
 
-        //This teleports the player to the other screen
+        // Pass the configured level integer into the static difficulty container.
+        LevelManager.SetLevelDifficulty(npcLevel);
+        Debug.Log($"Transmitting parameters for Level {npcLevel} to the minigame instance.");
+
         SceneManager.LoadScene(minigameSceneName);
     }
 }

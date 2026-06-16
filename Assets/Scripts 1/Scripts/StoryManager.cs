@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +34,7 @@ public class StoryManager : MonoBehaviour
     [Header("Other Elements")]
     [SerializeField] private RectTransform fireballObject;
     [SerializeField] private AudioSource themeMusic;
+    [SerializeField] private Image characterImage;
  
     [Header("Background")]
     [SerializeField] private Image backgroundImage;
@@ -49,6 +49,9 @@ public class StoryManager : MonoBehaviour
  
         if (backgroundImage != null)
             backgroundImage.color = new Color(1, 1, 1, 0);
+
+        if (characterImage != null)
+            characterImage.color = new Color(1, 1, 1, 0);
  
         HideAll();
         StartCoroutine(ShowTitle());
@@ -130,6 +133,22 @@ public class StoryManager : MonoBehaviour
             yield return null;
         }
     }
+
+    IEnumerator FadeCharacter(float targetAlpha, float duration)
+    {
+        if (characterImage == null) yield break;
+        float startAlpha = characterImage.color.a;
+        float t = 0;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            Color c = characterImage.color;
+            characterImage.color = new Color(c.r, c.g, c.b, Mathf.Lerp(startAlpha, targetAlpha, t / duration));
+            yield return null;
+        }
+        Color final = characterImage.color;
+        characterImage.color = new Color(final.r, final.g, final.b, targetAlpha);
+    }
  
     IEnumerator ShowTitle()
     {
@@ -170,10 +189,7 @@ public class StoryManager : MonoBehaviour
  
         SetBackground(1, 1f);
         yield return StartCoroutine(ShowDialogue("", "A huge wind sweeps through, erasing every trail marker."));
- 
-        // Black text for this specific narration line
         yield return StartCoroutine(ShowNarration("The trail… where did it go?", Color.black));
- 
         yield return StartCoroutine(Fade(fogGroup, 1, 3f));
  
         SetBackground(-1, 1f);
@@ -186,6 +202,7 @@ public class StoryManager : MonoBehaviour
         if (themeMusic != null) themeMusic.Play();
  
         SetBackground(3, 1f);
+        yield return StartCoroutine(FadeCharacter(1f, 1.5f));
         yield return StartCoroutine(ShowDialogue(playerName, "What is that sound…"));
         yield return StartCoroutine(ShowDialogue(playerName, "Hello…? Who's there…?"));
         yield return StartCoroutine(ShowDialogue(playerName, "What's that…?"));
@@ -194,7 +211,6 @@ public class StoryManager : MonoBehaviour
         yield return StartCoroutine(Teleport());
     }
  
-    // typewriterDuration: total seconds to type out the full line (default 3s)
     IEnumerator ShowDialogue(string speaker, string line, float typewriterDuration = 3f)
     {
         SetGroup(narrationGroup, 0);
@@ -222,7 +238,6 @@ public class StoryManager : MonoBehaviour
         yield return StartCoroutine(Fade(dialogueGroup, 0, 0.3f));
     }
  
-    // Optional color parameter — defaults to the text's current color if not supplied
     IEnumerator ShowNarration(string line, Color? textColor = null)
     {
         SetGroup(dialogueGroup, 0);
@@ -241,7 +256,6 @@ public class StoryManager : MonoBehaviour
             yield return new WaitForSeconds(3f);
             yield return StartCoroutine(Fade(narrationGroup, 0, 1f));
  
-            // Restore original color after the narration fades out
             narrationText.color = originalColor;
         }
         else
@@ -258,7 +272,7 @@ public class StoryManager : MonoBehaviour
  
         if (fireballObject != null)
         {
-            fireballObject.anchoredPosition = new Vector2(0, -400);
+            fireballObject.anchoredPosition = new Vector2(0, -600);
         }
  
         yield return StartCoroutine(Fade(fireballGroup, 1, 1f));
@@ -270,7 +284,7 @@ public class StoryManager : MonoBehaviour
             if (fireballObject != null)
             {
                 fireballObject.anchoredPosition = Vector2.Lerp(
-                    new Vector2(0, -400),
+                    new Vector2(0, -600),
                     new Vector2(0, 0),
                     t / 2.5f
                 );

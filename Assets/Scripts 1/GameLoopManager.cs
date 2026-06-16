@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TurnZero.Minigame;
 
 public class GameLoopManager : MonoBehaviour
 {

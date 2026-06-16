@@ -1,4 +1,5 @@
 using UnityEngine;
+using TurnZero.Minigame;
 
 public class Ball : MonoBehaviour
 {
@@ -19,8 +20,26 @@ public class Ball : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        // Process score zone collisions.
         if (col.gameObject.CompareTag("TargetP1")) ScoreManager.Instance.AddP1Hit();
         else if (col.gameObject.CompareTag("TargetP2")) ScoreManager.Instance.AddP2Hit();
+
+        // Detect collision with a defense wall component.
+        DefenseWall wall = col.gameObject.GetComponent<DefenseWall>();
+        if (wall != null)
+        {
+            // Evaluate active power-up states.
+            bool isPoweredUp = isFireball || isIceball;
+            
+            // Transmit damage signal to the wall.
+            wall.TakeHit(isPoweredUp);
+
+            // Strip power-up properties post-impact to restore standard physics.
+            if (isPoweredUp) 
+            {
+                StripPowerUp();
+            }
+        }
     }
 
     public void ActivateFireball()
@@ -39,34 +58,30 @@ public class Ball : MonoBehaviour
         isFireball = false;
     }
 
-    public void ResetBall()
+    // Reverts the ball to its default visual and logical state.
+    private void StripPowerUp()
     {
-        // Snap instantly back to the dead center of the arena
-        transform.position = Vector2.zero;
-        
-        // Kill all leftover momentum from the previous rally
-        rb.linearVelocity = Vector2.zero;
-        
-        // Reset visual state and special attacks
         GetComponent<SpriteRenderer>().color = Color.green;
         isFireball = false; 
         isIceball = false; 
+    }
+
+    public void ResetBall()
+    {
+        // Center the ball position and arrest all current velocity.
+        transform.position = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
+        
+        // Clear active power-ups prior to the new serve.
+        StripPowerUp(); 
 
         Vector2 launchDirection = new Vector2(1f, 1f).normalized;
 
-        // Check the Turn Manager to figure out which way to serve the ball
+        // Calculate serve trajectory based on active turn state.
         if (TurnManager.Instance != null)
         {
-            if (TurnManager.Instance.isPlayer1Turn)
-            {
-                // P1's Turn: Shoot towards the right
-                launchDirection = new Vector2(1f, 1f).normalized; 
-            }
-            else
-            {
-                // P2's Turn: Shoot towards the left
-                launchDirection = new Vector2(-1f, -1f).normalized; 
-            }
+            if (TurnManager.Instance.IsPlayer1Turn) launchDirection = new Vector2(1f, 1f).normalized; 
+            else launchDirection = new Vector2(-1f, -1f).normalized; 
         }
 
         LaunchBall(launchDirection);

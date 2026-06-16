@@ -1,76 +1,57 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class RobotFreeAnim : MonoBehaviour {
+public class RobotFreeAnim : MonoBehaviour
+{
+    private Animator anim;
+    private bool isPlayerInRange = false;
 
-	Vector3 rot = Vector3.zero;
-	float rotSpeed = 40f;
-	Animator anim;
+    void Awake()
+    {
+        anim = GetComponent<Animator>();
+    }
 
-	// Use this for initialization
-	void Awake()
-	{
-		anim = gameObject.GetComponent<Animator>();
-		gameObject.transform.eulerAngles = rot;
-	}
+    void Update()
+    {
+        // Only run the animation logic if the player has been detected
+        if (isPlayerInRange)
+        {
+            RunAutomaticRoutine();
+        }
+    }
 
-	// Update is called once per frame
-	void Update()
-	{
-		CheckKey();
-		gameObject.transform.eulerAngles = rot;
-	}
+    // Triggered when an object enters the robot's detection zone
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = true;
+        }
+    }
 
-	void CheckKey()
-	{
-		// Walk
-		if (Input.GetKey(KeyCode.W))
-		{
-			anim.SetBool("Walk_Anim", true);
-		}
-		else if (Input.GetKeyUp(KeyCode.W))
-		{
-			anim.SetBool("Walk_Anim", false);
-		}
+    // Triggered when an object leaves the detection zone
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = false;
+            ResetAnimations();
+        }
+    }
 
-		// Rotate Left
-		if (Input.GetKey(KeyCode.A))
-		{
-			rot[1] -= rotSpeed * Time.fixedDeltaTime;
-		}
+    private void RunAutomaticRoutine()
+    {
+        // Start the routine with the roll animation (ball mode)
+        anim.SetBool("Roll_Anim", true);
+        
+        // Add additional logic here to sequence other animations
+        // like walking or opening after the roll starts
+    }
 
-		// Rotate Right
-		if (Input.GetKey(KeyCode.D))
-		{
-			rot[1] += rotSpeed * Time.fixedDeltaTime;
-		}
-
-		// Roll
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			if (anim.GetBool("Roll_Anim"))
-			{
-				anim.SetBool("Roll_Anim", false);
-			}
-			else
-			{
-				anim.SetBool("Roll_Anim", true);
-			}
-		}
-
-		// Close
-		if (Input.GetKeyDown(KeyCode.LeftControl))
-		{
-			if (!anim.GetBool("Open_Anim"))
-			{
-				anim.SetBool("Open_Anim", true);
-			}
-			else
-			{
-				anim.SetBool("Open_Anim", false);
-			}
-		}
-	}
-
+    private void ResetAnimations()
+    {
+        // Stop all animations when the player is out of range
+        anim.SetBool("Roll_Anim", false);
+        anim.SetBool("Walk_Anim", false);
+        anim.SetBool("Open_Anim", false);
+    }
 }

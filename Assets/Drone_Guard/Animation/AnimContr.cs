@@ -1,34 +1,31 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AnimContr : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public Animator anim;
+    private Animator anim;
+
     void Start()
     {
         anim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    // Triggered when the player enters the robot's range
+    private void OnTriggerEnter(Collider other)
     {
-
-        if (Input.GetKeyDown("s"))
+        if (other.CompareTag("Player"))
         {
-            anim.Play("ShutDown");
-        }
-
-        if (Input.GetKeyDown("w"))
-        {
+            // Robot detects player and wakes up
             anim.Play("WakeUp");
         }
+    }
 
-        if (Input.GetKeyDown("d"))
+    // Triggered when the player leaves the robot's range
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
-            anim.Play("Destroyed");
+            // Robot goes back to sleep when player leaves
+            anim.Play("ShutDown");
         }
-
     }
 }

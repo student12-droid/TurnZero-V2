@@ -1,83 +1,46 @@
-// Used for selecting attack options
+// Transitions between Battle panel and PingPong with hover descriptions
 using UnityEngine;
-using TMPro; 
-using System.Collections;
+using TMPro;
 
 public class BattleSelection : MonoBehaviour
 {
+    [Header("Panels")]
+    public GameObject fromPanel;
+    public GameObject toPanel;
+
     [Header("UI Elements")]
-    public TextMeshProUGUI descriptionText; 
-
-    [Header("Game Panels")]
-    public GameObject battleUIPanel; 
-    public GameObject pingPongEnvironment;  
-
-    // variable to store the chosen attack type
-    public static string chosenAttackType = "None"; 
-
-    public const string ATTACK_HEAVY = "Heavy";
-    public const string ATTACK_QUICK = "Quick";
-  
+    public TextMeshProUGUI descriptionText;
 
     void Start()
     {
-       
-        // Ensure the Ping Pong environment is initially inactive when Battle UI is active
-        if (pingPongEnvironment != null)
-        {
-            pingPongEnvironment.SetActive(false);
-        }
-        
         ClearDescription();
     }
 
-    // Called when the Heavy Attack button is pressed
-    public void OnHeavyAttackSelected()
+    public void OnButtonPressed()
     {
-        chosenAttackType = ATTACK_HEAVY;
-        Debug.Log("Heavy Attack Selected! Transitioning to Ping Pong.");
-        StartPingPongGame();
-    }
+        if (fromPanel != null)
+            fromPanel.SetActive(false);
 
-    // Called when the Quick Attack button is pressed
-    public void OnQuickAttackSelected()
-    {
-        chosenAttackType = ATTACK_QUICK;
-        Debug.Log("Quick Attack Selected! Transitioning to Ping Pong.");
-        StartPingPongGame();
-    }
-
-
-    // Handles the transition from Battle UI to Ping Pong game
-    private void StartPingPongGame()
-    {
-        if (battleUIPanel != null)
-        {
-            battleUIPanel.SetActive(false);
-        }
-        if (pingPongEnvironment != null)
-        {
-            pingPongEnvironment.SetActive(true); 
-        }
+        if (toPanel != null)
+            toPanel.SetActive(true);
         else
-        {
-            Debug.LogError("PingPongEnvironment not assigned in BattleSelection script!");
-        }
+            Debug.LogError("ToPanel not assigned in PanelTransition script!");
     }
 
-    // Handles the attack description
-    public void HoverHeavy()
+    public void HoverEnter() //Displays text when you hover over the button
     {
-        descriptionText.text = "<color=#00E5FF>HEAVY ATTACK:</color>\nDeals 2x Damage.\n<color=#FF4B4B>EFFECT:</color> Ball speed increases by 50%.";
+        if (descriptionText != null)
+            descriptionText.text = "Start the Battle for your Freedom";
     }
 
-    public void HoverQuick()
+    public void HoverExit()
     {
-        descriptionText.text = "<color=#00E5FF>QUICK ATTACK:</color>\nSimple but Quick attack dealing light Damage.\n<color=#00FF88>EFFECT:</color> Ball speed decreases by 20%.";
+        ClearDescription();
     }
 
-       public void ClearDescription()
+    public void ClearDescription()
     {
-        descriptionText.text = "Select an action...";
+        if (descriptionText != null)
+            descriptionText.text = "Select an action...";
     }
 }

@@ -1,17 +1,18 @@
 //Saves your state in Scenes
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class SceneHistory : MonoBehaviour
 {
     public static SceneHistory Instance;
     [Header("Scene Tracking")]
-     public string previousSceneName = "";
+    public string previousSceneName = "";
 
-     [Header("Player State")]
-     public Vector3 savedPlayerPosition;
-     public Quaternion savedPlayerRotation;
-     public bool hasStoredPosition = false;
+    [Header("Player State")]
+    public Vector3 savedPlayerPosition;
+    public Quaternion savedPlayerRotation;
+    public bool hasStoredPosition = false;
 
     void Awake()
     {
@@ -20,13 +21,13 @@ public class SceneHistory : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
-
         }
         else
         {
             Destroy(gameObject);
         }
     }
+
     void OnDestroy()
     {
         if (Instance == this)
@@ -34,21 +35,33 @@ public class SceneHistory : MonoBehaviour
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //Restores player position when returning to Hub World
+        Debug.Log("Scene loaded: " + scene.name + " | hasStoredPosition: " + hasStoredPosition);
+        // Restores player position when returning to Hub World
         if (scene.name == "TurnZero_Main Game" && hasStoredPosition)
         {
-            RestorePlayerPosition();
+            StartCoroutine(RestoreAfterFrame());
         }
     }
+
+    IEnumerator RestoreAfterFrame()
+    {
+        // wait a few frames instead of just one
+        yield return null;
+        yield return null;
+        yield return null;
+        RestorePlayerPosition();
+    }
+
     public void RecordScene(string currentScene)
     {
         previousSceneName = currentScene;
         Debug.Log("Recorded previous scene: " + currentScene);
     }
-    
-    //Called before leaving the hub world to save position
+
+    // Called before leaving the hub world to save position
     public void SavePlayerState()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -66,28 +79,32 @@ public class SceneHistory : MonoBehaviour
             Debug.LogWarning("Could not find Player to save state!");
         }
     }
-    
-    //This gets called when the hub loads to load the player position
+
+    // This gets called when the hub loads to restore the player position
     void RestorePlayerPosition()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
+        Debug.Log("RestorePlayerPosition called. Player found: " + (player != null));
 
         if (player != null)
         {
-            //Disables the character controller to avoid conflict
+            // Disables the character controller to avoid conflict
             CharacterController cc = player.GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
-
-            //Restore Position
+            Debug.Log("Moving player to: " + savedPlayerPosition);
             player.transform.position = savedPlayerPosition;
-            player.transform.position = savedPlayerPosition;
+            player.transform.rotation = savedPlayerRotation;
 
-            //Re-enables the character controller
+            // Restore position and rotation
+            player.transform.position = savedPlayerPosition;
+            player.transform.rotation = savedPlayerRotation; // fixed: was a duplicate position line
+
+            // Re-enables the character controller
             if (cc != null) cc.enabled = true;
-
             Debug.Log("Player position restored to: " + savedPlayerPosition);
-            
-            //Clear the flag to prevent restore again on accidental reload
+            hasStoredPosition = false;
+
+            // Clear the flag to prevent restore again on accidental reload
             hasStoredPosition = false;
         }
         else

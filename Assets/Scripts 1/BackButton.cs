@@ -4,11 +4,11 @@ using UnityEngine;
 public class BackToMenu : MonoBehaviour
 {
     public GameObject PingPongEnviornment;
-    public GameObject mainMenuPanel; 
+    public GameObject BattlePanel; 
 
     public void OnBackButton()
     {
         PingPongEnviornment.SetActive(false);
-        mainMenuPanel.SetActive(true);
+        BattlePanel.SetActive(true);
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - TargetP1
   - Fireball
   - Iceball
+  - Player2
   layers:
   - Default
   - TransparentFX
