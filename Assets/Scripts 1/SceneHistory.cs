@@ -48,13 +48,29 @@ public class SceneHistory : MonoBehaviour
 
     IEnumerator RestoreAfterFrame()
     {
-        // wait a few frames instead of just one
-        yield return null;
-        yield return null;
-        yield return null;
-        RestorePlayerPosition();
-    }
+        GameObject player = null;
+        float timeout = 5f;
+        float elapsed = 0f;
 
+        while (player == null && elapsed < timeout)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null)
+            {
+                elapsed += Time.deltaTime;
+                yield return null; // keep trying every frame
+            }
+        }
+
+        if (player != null)
+        {
+            RestorePlayerPosition();
+        }
+        else
+        {
+            Debug.LogWarning("Timed out waiting for Player to spawn!");
+        }
+    }
     public void RecordScene(string currentScene)
     {
         previousSceneName = currentScene;

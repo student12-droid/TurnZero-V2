@@ -5,9 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes 1/DemoMainMenu.unity
-    guid: 059707f40c7e4624481233fd1ccf83f1
   - enabled: 1
     path: Assets/Scenes 1/TurnZero_Main Game.unity
     guid: a53984814216c39419fb62299c4ce5f2
@@ -23,12 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes 1/Demo_2.unity
     guid: 58bbeabc18e7e9542b78832efd6f8e96
-  - enabled: 0
-    path: Assets/Scenes 1/TurnZero.unity
-    guid: 1cc412d1e08cb294daf5aeaa0ffef10c
-  - enabled: 0
-    path: Assets/Scenes 1/DemoMainMenu.unity
-    guid: 059707f40c7e4624481233fd1ccf83f1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

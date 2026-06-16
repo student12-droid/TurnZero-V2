@@ -15,7 +15,25 @@ public class MainMenuManager : MonoBehaviour
     public float fadeDuration = 0.5f;
 
     void Awake()
-    {   
+    {    
+            // If returning from battle, skip the main menu entirely
+        if (SceneHistory.Instance != null && SceneHistory.Instance.hasStoredPosition)
+        {
+            if (mainMenuPanel != null)
+                mainMenuPanel.SetActive(false);
+
+            if (hubWorldRoot != null)
+                hubWorldRoot.SetActive(true);
+
+            if (npcPromptText != null)
+                npcPromptText.SetActive(true);
+
+            if (fadeOverlay != null)
+                fadeOverlay.color = new Color(0, 0, 0, 0);
+
+            return; // skip the rest of Awake
+        }
+
         // Makes sure the main menu is shown
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);

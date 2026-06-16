@@ -23,7 +23,7 @@ public class BattleSceneManager : MonoBehaviour
             fadeOverlay.color = new Color(0, 0, 0, 0);
     }
 
-    // Call this from the NPC to trigger the battle UI
+    // Call this from your NPC dialogue trigger to start the battle UI
     public void OnBattleStart()
     {
         StartCoroutine(FadeInBattlePanel());
@@ -51,10 +51,6 @@ public class BattleSceneManager : MonoBehaviour
     {
         if (fadeOverlay != null)
             yield return StartCoroutine(Fade(1f));
-
-        // Saves position in case it wasn't saved before entering battle
-        if (SceneHistory.Instance != null)
-            SceneHistory.Instance.SavePlayerState();
 
         Debug.Log("Returning to Hub: " + hubSceneName);
         SceneManager.LoadScene(hubSceneName);
